@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kettlebell Workout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent:      #ff6a00;
+    --accent-dim:  rgba(255,106,0,0.15);
+    --accent-glow: rgba(255,106,0,0.35);
+    --bg:          #080808;
+    --surface:     #101010;
+    --surface2:    #181818;
+    --border:      #242424;
+    --text:        #ffffff;
+    --text2:       #777777;
+    --text3:       #333333;
+    --green:       #22c55e;
+    --red-warn:    #ef4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(255,106,0,0.07) 0%, transparent 70%);
+  }
+
+  /* ── Header ── */
+  header {
+    width: 100%;
+    max-width: 680px;
+    padding: 36px 24px 0;
+    text-align: center;
+    position: relative;
+  }
+
+  /* Hamburger button — hidden until a workout is active */
+  #hamburger {
+    display: none;
+    position: absolute;
+    top: 36px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    z-index: 200;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  #hamburger:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  #hamburger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: transform 0.25s, opacity 0.25s;
+  }
+  /* Animate to X when open */
+  #hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  #hamburger.open span:nth-child(2) { opacity: 0; }
+  #hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Dropdown panel */
+  #nav-menu {
+    display: none;
+    position: absolute;
+    top: 82px;
+    right: 24px;
+    width: 300px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    z-index: 199;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    flex-direction: column;
+    gap: 10px;
+  }
+  #nav-menu.open { display: flex; }
+  /* Compact card variant inside the menu */
+  #nav-menu .wb-card {
+    padding: 16px;
+  }
+  #nav-menu .wb-card-title { font-size: 1.4rem; }
+  #nav-menu .wb-card-desc  { font-size: 0.75rem; }
+
+  .logo-bar {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 3.4rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  /* ── Workout selector ── */
+  #selector {
+    display: flex;
+    gap: 16px;
+    margin: 32px 0 0;
+    width: 100%;
+    max-width: 680px;
+    padding: 0 24px;
+  }
+
+  .wb-card {
+    flex: 1;
+    padding: 24px 20px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .wb-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .wb-card:hover::before,
+  .wb-card.active::before  { opacity: 1; }
+  .wb-card:hover,
+  .wb-card.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+
+  .wb-card-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .wb-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .wb-card-desc {
+    font-size: 0.8rem;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .wb-card-tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  /* ── Main workout UI ── */
+  #workout-ui {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 680px;
+    padding: 0 24px 60px;
+  }
+
+  /* Progress bar */
+  #progress-wrap {
+    width: 100%;
+    background: var(--surface2);
+    border-radius: 99px;
+    height: 4px;
+    margin: 28px 0 32px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.5s ease, background 0.4s ease;
+    border-radius: 99px;
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  /* Round badge */
+  #round-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* Set name */
+  #set-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 3rem;
+    font-weight: 900;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 14px;
+    transition: color 0.4s;
+  }
+
+  /* Weight + reps chips */
+  #chips {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .chip {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+  }
+  .chip.accent {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    transition: background 0.4s, border-color 0.4s, color 0.4s, box-shadow 0.4s;
+  }
+
+  /* Animation box */
+  #anim-box {
+    width: min(260px, 80vw);
+    height: min(210px, 65vw);
+    background: var(--surface);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.4s, box-shadow 0.4s;
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  #anim-box.lit {
+    border-color: var(--accent);
+    box-shadow: 0 0 28px var(--accent-glow), inset 0 0 20px rgba(0,0,0,0.5);
+  }
+  #anim-box svg {
+    width: 210px;
+    height: 190px;
+  }
+
+  /* Timer ring */
+  #timer-wrap {
+    position: relative;
+    width: 190px;
+    height: 190px;
+    margin-bottom: 32px;
+  }
+  #timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+  #timer-bg   { fill: none; stroke: var(--surface2); stroke-width: 8; }
+  #timer-ring {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear, stroke 0.4s;
+    filter: drop-shadow(0 0 6px var(--accent-glow));
+  }
+  #timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.4s;
+  }
+  #timer-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -1px;
+    transition: color 0.4s;
+  }
+  #timer-label {
+    margin-top: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+
+  /* Controls */
+  #controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    padding: 13px 26px;
+    border-radius: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .ctrl-btn:hover  { opacity: 0.88; }
+  .ctrl-btn:active { transform: scale(0.97); }
+
+  #btn-done  {
+    background: var(--green);
+    color: #fff;
+    display: none;
+    font-size: 1.05rem;
+    padding: 16px 36px;
+    box-shadow: 0 0 18px rgba(34,197,94,0.4);
+    letter-spacing: 2px;
+  }
+  #btn-start { background: var(--green); color: #fff; box-shadow: 0 0 16px rgba(34,197,94,0.35); }
+  #btn-pause { background: #d97706; color: #fff; display: none; }
+  #btn-skip  { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  #btn-reset { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+  /* Next-up */
+  #next-up {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text3);
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  #next-up span { color: var(--text2); }
+
+  /* Divider */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* ── Done screen ── */
+  #done-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 24px;
+    text-align: center;
+  }
+  #done-screen .done-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  #done-screen h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 3.6rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  #done-screen p {
+    color: var(--text2);
+    font-size: 1rem;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+  .done-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 16px 44px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .done-btn:hover {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+
+  /* ── Touch optimisations ── */
+  button, .wb-card, .done-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 520px) {
+    header {
+      padding: 20px 16px 0;
+    }
+    h1 {
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+    }
+
+    #hamburger {
+      top: 20px;
+      right: 16px;
+    }
+    /* Nav-menu: full bleed on small screens so it never overflows */
+    #nav-menu {
+      left: 12px;
+      right: 12px;
+      width: auto;
+      top: 68px;
+    }
+
+    #selector {
+      flex-direction: column;
+      padding: 0 16px;
+      margin-top: 20px;
+    }
+
+    #workout-ui {
+      padding: 0 16px 40px;
+    }
+    #progress-wrap {
+      margin: 16px 0 20px;
+    }
+    #round-badge {
+      margin-bottom: 6px;
+    }
+    #set-name {
+      font-size: 2rem;
+    }
+    #chips {
+      margin-bottom: 18px;
+    }
+    #anim-box {
+      margin-bottom: 18px;
+    }
+    #timer-wrap {
+      width: 160px;
+      height: 160px;
+      margin-bottom: 20px;
+    }
+    #timer-number {
+      font-size: 3.2rem;
+    }
+
+    #controls {
+      gap: 8px;
+    }
+    .ctrl-btn {
+      padding: 14px 20px;
+      font-size: 0.95rem;
+    }
+    /* Done button spans full width for easy thumb tap */
+    #btn-done {
+      width: 100%;
+      justify-content: center;
+    }
+
+    #done-screen {
+      padding: 40px 16px;
+    }
+    #done-screen h2 {
+      font-size: 2.6rem;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-bar" id="logo-bar">Iron &amp; Grit</div>
+  <h1 id="main-title">Kettlebell</h1>
+
+  <button id="hamburger" onclick="toggleMenu()" aria-label="Choose workout">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div id="nav-menu">
+    <div class="wb-card" onclick="selectWorkout('A'); closeMenu()">
+      <div class="wb-card-label">Workout A</div>
+      <div class="wb-card-title">Strength</div>
+      <div class="wb-card-desc">3 rounds · Squats, Clean &amp; Press, Rows</div>
+      <span class="wb-card-tag">Manual Advance</span>
+    </div>
+    <div class="wb-card" onclick="selectWorkout('B'); closeMenu()">
+      <div class="wb-card-label">Workout B</div>
+      <div class="wb-card-title">Conditioning</div>
+      <div class="wb-card-desc">6 rounds · Swings + Thrusters</div>
+      <span class="wb-card-tag">Timed</span>
+    </div>
+  </div>
+</header>
+
+<div id="menu-backdrop" onclick="closeMenu()" style="display:none;position:fixed;inset:0;z-index:198;"></div>
+
+<div id="selector">
+  <div class="wb-card" onclick="selectWorkout('A')">
+    <div class="wb-card-label">Workout A</div>
+    <div class="wb-card-title">Strength</div>
+    <div class="wb-card-desc">3 rounds · Squats, Clean &amp; Press, Rows<br>Rest between sets</div>
+    <span class="wb-card-tag">Manual Advance</span>
+  </div>
+  <div class="wb-card" onclick="selectWorkout('B')">
+    <div class="wb-card-label">Workout B</div>
+    <div class="wb-card-title">Conditioning</div>
+    <div class="wb-card-desc">6 rounds · Swings + Thrusters<br>Every minute on the minute</div>
+    <span class="wb-card-tag">Timed</span>
+  </div>
+</div>
+
+<!-- ── Workout UI ── -->
+<div id="workout-ui">
+  <div id="progress-wrap"><div id="progress-bar"></div></div>
+
+  <div id="round-badge"></div>
+  <div id="set-name"></div>
+  <div id="chips"></div>
+
+  <div id="anim-box"></div>
+
+  <div id="timer-wrap">
+    <svg id="timer-svg" width="190" height="190" viewBox="0 0 190 190">
+      <circle id="timer-bg" cx="95" cy="95" r="84"/>
+      <circle id="timer-ring" cx="95" cy="95" r="84"/>
+    </svg>
+    <div id="timer-text">
+      <span id="timer-number">60</span>
+      <div id="timer-label">seconds</div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button class="ctrl-btn" id="btn-done"  onclick="advance()">Done — Start Rest</button>
+    <button class="ctrl-btn" id="btn-start" onclick="startTimer()">Start</button>
+    <button class="ctrl-btn" id="btn-pause" onclick="pauseTimer()">Pause</button>
+    <button class="ctrl-btn" id="btn-skip"  onclick="skipSet()">Skip</button>
+    <button class="ctrl-btn" id="btn-reset" onclick="resetWorkout()">Reset</button>
+  </div>
+
+  <div id="next-up">Up next &nbsp;·&nbsp; <span id="next-name">—</span></div>
+</div>
+
+<!-- ── Confetti canvas ── -->
+<canvas id="confetti-canvas" style="
+  display:none; position:fixed; inset:0;
+  width:100%; height:100%;
+  pointer-events:none; z-index:999;
+"></canvas>
+
+<!-- ── Done screen ── -->
+<div id="done-screen">
+  <div class="done-label">Session Complete</div>
+  <h2>Smashed It</h2>
+  <p>Every rep counted. Rest up and come back stronger.</p>
+  <button class="done-btn" onclick="resetWorkout()">Go Again</button>
+</div>
+
+<script>
+// ── Audio engine (Web Audio API — no files needed) ────────────────────────
+
+let audioCtx = null;
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+// Short, quiet mechanical tick
+function playTick() {
+  const ctx  = getCtx();
+  const buf  = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 6);
+  }
+  const src  = ctx.createBufferSource();
+  src.buffer = buf;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.18, ctx.currentTime);
+  src.connect(gain);
+  gain.connect(ctx.destination);
+  src.start();
+}
+
+// Speak seconds remaining in English
+const SPOKEN = {10:'ten',20:'twenty',30:'thirty',40:'forty',50:'fifty',60:'sixty',70:'seventy',80:'eighty',90:'ninety'};
+function speakSeconds(n) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(SPOKEN[n] ?? String(n));
+  utt.rate  = 1.15;
+  utt.pitch = 1.1;
+  utt.volume = 1;
+  window.speechSynthesis.speak(utt);
+}
+
+// Bright chime — two-tone ping (10-second warning)
+function playChime() {
+  const ctx = getCtx();
+  [880, 1320].forEach((freq, i) => {
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type      = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.55, ctx.currentTime + 0.01 + i * 0.12);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9 + i * 0.12);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime + i * 0.12);
+    osc.stop(ctx.currentTime  + 1.1);
+  });
+}
+
+// Deep bong — new exercise transition
+function playBong() {
+  const ctx  = getCtx();
+  const now  = ctx.currentTime;
+
+  // fundamental + harmonics for a bell-like tone
+  [[180, 1.0], [360, 0.5], [540, 0.25], [900, 0.12]].forEach(([freq, amp]) => {
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.4 * amp, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 2.6);
+  });
+}
+
+// ── High-quality articulated stick-figure animation system ────────────────
+
+let animRAF = null;
+
+function stopAnim() {
+  if (animRAF !== null) { cancelAnimationFrame(animRAF); animRAF = null; }
+}
+
+// Maths helpers
+function lerp(a, b, t)      { return a + (b - a) * t; }
+function lp([ax,ay],[bx,by],t) { return [lerp(ax,bx,t), lerp(ay,by,t)]; }
+function eio(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }   // ease-in-out
+function osc(t, period)     { return (1 - Math.cos(2*Math.PI*t/period)) / 2; }
+
+// Interpolate every joint between two pose keyframes
+function interp(A, B, t) {
+  const R = {};
+  for (const k of Object.keys(A)) {
+    if (Array.isArray(A[k]))        R[k] = lp(A[k], B[k] ?? A[k], t);
+    else if (typeof A[k]==='number') R[k] = lerp(A[k], B[k] ?? A[k], t);
+  }
+  if (B.bell && !A.bell)  R.bell = lp(A.neck, B.bell, t);
+  if (!B.bell && A.bell)  R.bell = lp(A.bell, A.neck, t);
+  return R;
+}
+
+// Render one SVG frame from joint positions
+function renderFigure(j) {
+  const f = v => v.toFixed(1);
+  const ac = 'var(--accent)';
+  const su = 'var(--surface2)';
+
+  // Line helper
+  const L = ([x1,y1],[x2,y2], sw, op) => {
+    const o = op != null ? ` opacity="${op}"` : '';
+    return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${ac}" stroke-width="${sw}" stroke-linecap="round"${o}/>`;
+  };
+
+  const DIM = 0.38;  // back-limb opacity for depth
+  let s = '';
+
+  // ── Back (left) limbs — dimmer ──
+  s += L(j.neck,  j.lsho,  2.5, DIM);
+  s += L(j.lsho,  j.lelb,  2.5, DIM);
+  s += L(j.lelb,  j.lhan,  2.5, DIM);
+  s += L(j.hip,   j.lkne,  2.5, DIM);
+  s += L(j.lkne,  j.lfoot, 2.5, DIM);
+
+  // ── Bell (between back and front for depth) ──
+  if (j.bell) {
+    const [bx,by] = j.bell;
+    const ang = (j.bellAngle||0).toFixed(1);
+    s += `<g transform="translate(${f(bx)},${f(by)}) rotate(${ang})">
+      <ellipse cx="0" cy="5" rx="10" ry="9" fill="${su}" stroke="${ac}" stroke-width="2"/>
+      <path d="M-4.5,-4 Q-7,-15 -3,-18 L3,-18 Q7,-15 4.5,-4" fill="${su}" stroke="${ac}" stroke-width="2.2" stroke-linejoin="round"/>
+    </g>`;
+  }
+
+  // ── Spine + right collar ──
+  s += L(j.neck,  j.hip,   3.2);
+  s += L(j.neck,  j.rsho,  3);
+  s += L(j.neck,  j.lsho,  2.6, DIM*2.2);   // left collar, slightly more visible
+
+  // ── Front (right) limbs ──
+  s += L(j.rsho,  j.relb,  3);
+  s += L(j.relb,  j.rhan,  3);
+  s += L(j.hip,   j.rkne,  3);
+  s += L(j.rkne,  j.rfoot, 3);
+
+  // ── Head (on top) ──
+  const [hx,hy] = j.head;
+  s += `<circle cx="${f(hx)}" cy="${f(hy)}" r="12" fill="none" stroke="${ac}" stroke-width="3"/>`;
+
+  return s;
+}
+
+// Pose dispatch
+function getPose(type, t) {
+  switch (type) {
+    case 'squat':    return poseSquat(t);
+    case 'press':    return posePress(t);
+    case 'row':      return poseRow(t);
+    case 'swing':    return poseSwing(t);
+    case 'thruster': return poseThruster(t);
+    default:         return poseRest(t);
+  }
+}
+
+// ── Goblet Squat ──────────────────────────────────────────────────────────
+function poseSquat(t) {
+  const p = eio(osc(t, 2.4));
+  const A = {  // standing, bell at chest
+    head: [110,28],  neck: [110,44],
+    lsho: [93,54],   rsho: [127,54],
+    lelb: [88,65],   relb: [132,65],
+    lhan: [96,78],   rhan: [124,78],
+    hip:  [110,104],
+    lkne: [100,145], rkne: [120,145],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [110,81],  bellAngle: 0,
+  };
+  const B = {  // bottom — hips below knees, knees tracking out over toes
+    head: [109,58],  neck: [109,73],
+    lsho: [92,83],   rsho: [126,83],
+    lelb: [87,95],   relb: [131,95],
+    lhan: [97,107],  rhan: [121,107],
+    hip:  [110,128],
+    lkne: [83,158],  rkne: [137,158],
+    lfoot:[93,184],  rfoot:[127,184],
+    bell: [110,109], bellAngle: 0,
+  };
+  return interp(A, B, p);
+}
+
+// ── Single-arm Clean & Press ─────────────────────────────────────────────
+function posePress(t) {
+  const period = 3.4;
+  const p = (t % period) / period;
+
+  const HANG = {   // bell near knee, slight athletic hinge
+    head: [110,34],  neck: [110,48],
+    lsho: [93,58],   rsho: [127,58],
+    lelb: [87,78],   relb: [134,76],
+    lhan: [84,98],   rhan: [130,94],
+    hip:  [110,108],
+    lkne: [100,148], rkne: [120,148],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [132,98],  bellAngle: 8,
+  };
+  const RACK = {   // bell at right shoulder, elbow high & forward
+    head: [110,30],  neck: [110,44],
+    lsho: [93,54],   rsho: [127,54],
+    lelb: [87,76],   relb: [140,50],
+    lhan: [83,96],   rhan: [128,50],
+    hip:  [110,104],
+    lkne: [100,145], rkne: [120,145],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [124,42],  bellAngle: -18,
+  };
+  const OH = {     // arm extended overhead, slight forward reach
+    head: [110,32],  neck: [110,46],
+    lsho: [93,56],   rsho: [127,56],
+    lelb: [87,76],   relb: [135,28],
+    lhan: [83,97],   rhan: [133,8],
+    hip:  [110,106],
+    lkne: [100,146], rkne: [120,146],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [131,0],   bellAngle: -6,
+  };
+
+  // 0→0.36 clean, 0.36→0.60 press, 0.60→1.0 return
+  if (p < 0.36) return interp(HANG, RACK, eio(p / 0.36));
+  if (p < 0.60) return interp(RACK, OH,   eio((p-0.36)/0.24));
+  return             interp(OH,   HANG,   eio((p-0.60)/0.40));
+}
+
+// ── Bent-over Row ────────────────────────────────────────────────────────
+function poseRow(t) {
+  const p = eio(osc(t, 1.9));
+  const EXT = {  // arm extended, bell hanging at full stretch
+    head: [80,52],   neck: [90,63],
+    lsho: [80,70],   rsho: [108,64],
+    lelb: [68,90],   relb: [114,82],
+    lhan: [62,110],  rhan: [116,100],
+    hip:  [128,96],
+    lkne: [118,138], rkne: [132,138],
+    lfoot:[106,184], rfoot:[134,184],
+    bell: [116,108], bellAngle: 5,
+  };
+  const PULL = {  // elbow drives back and up, bell to hip
+    head: [80,52],   neck: [90,63],
+    lsho: [80,70],   rsho: [108,64],
+    lelb: [68,90],   relb: [102,70],
+    lhan: [62,110],  rhan: [108,80],
+    hip:  [128,96],
+    lkne: [118,138], rkne: [132,138],
+    lfoot:[106,184], rfoot:[134,184],
+    bell: [106,86],  bellAngle: -8,
+  };
+  return interp(EXT, PULL, p);
+}
+
+// ── Kettlebell Swing ─────────────────────────────────────────────────────
+function poseSwing(t) {
+  const period = 1.7;
+  const raw = (t % period) / period;
+  // Asymmetric: explosive hinge→float (35%), brief float (20%), smooth return (45%)
+  let p;
+  if      (raw < 0.35) p = eio(raw / 0.35);
+  else if (raw < 0.55) p = 1;
+  else                 p = 1 - eio((raw-0.55) / 0.45);
+
+  const HINGE = {  // hip hinge, torso ~45°, bell on backswing
+    head: [102,60],  neck: [112,72],
+    lsho: [98,80],   rsho: [126,78],
+    lelb: [94,100],  relb: [122,98],
+    lhan: [94,116],  rhan: [122,114],
+    hip:  [132,88],
+    lkne: [118,128], rkne: [136,128],
+    lfoot:[106,184], rfoot:[134,184],
+    bell: [112,126], bellAngle: 28,
+  };
+  const FLOAT = {  // full hip extension, arms float to shoulder height
+    head: [110,30],  neck: [110,44],
+    lsho: [93,54],   rsho: [127,54],
+    lelb: [88,68],   relb: [132,68],
+    lhan: [89,82],   rhan: [131,82],
+    hip:  [110,104],
+    lkne: [100,144], rkne: [120,144],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [110,64],  bellAngle: -14,
+  };
+  return interp(HINGE, FLOAT, p);
+}
+
+// ── Thruster (front squat → push press) ──────────────────────────────────
+function poseThruster(t) {
+  const period = 2.4;
+  const raw = (t % period) / period;
+  // Spend slightly longer in the hole (40%) then drive up fast (60%)
+  const p = raw < 0.42
+    ? eio(raw / 0.42)
+    : 1 - eio((raw-0.42) / 0.58);
+
+  const BOTTOM = {  // deep squat, bell at rack/chest
+    head: [109,64],  neck: [109,78],
+    lsho: [92,88],   rsho: [126,88],
+    lelb: [87,100],  relb: [131,100],
+    lhan: [97,112],  rhan: [121,112],
+    hip:  [110,130],
+    lkne: [83,160],  rkne: [137,160],
+    lfoot:[93,184],  rfoot:[127,184],
+    bell: [110,112], bellAngle: 0,
+  };
+  const TOP = {     // fully standing, bell locked out overhead
+    head: [110,36],  neck: [110,50],
+    lsho: [93,60],   rsho: [127,60],
+    lelb: [88,40],   relb: [132,36],
+    lhan: [94,18],   rhan: [126,12],
+    hip:  [110,110],
+    lkne: [100,151], rkne: [120,151],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [110,6],   bellAngle: 0,
+  };
+  return interp(BOTTOM, TOP, p);
+}
+
+// ── Standing Rest (breathing) ─────────────────────────────────────────────
+function poseRest(t) {
+  const p = eio(osc(t, 3.0));
+  const A = {  // exhale — slight slump, arms loose
+    head: [110,33],  neck: [110,47],
+    lsho: [93,58],   rsho: [127,58],
+    lelb: [89,76],   relb: [131,76],
+    lhan: [91,96],   rhan: [129,96],
+    hip:  [110,107],
+    lkne: [100,148], rkne: [120,148],
+    lfoot:[97,184],  rfoot:[123,184],
+  };
+  const B = {  // inhale — chest lifts, shoulders back
+    head: [110,30],  neck: [110,44],
+    lsho: [91,54],   rsho: [129,54],
+    lelb: [87,72],   relb: [133,72],
+    lhan: [89,93],   rhan: [131,93],
+    hip:  [110,105],
+    lkne: [100,145], rkne: [120,145],
+    lfoot:[97,184],  rfoot:[123,184],
+  };
+  return interp(A, B, p);
+}
+
+// Start the RAF loop for a given exercise type
+function startAnim(type) {
+  stopAnim();
+  const box = document.getElementById('anim-box');
+  if (!box) return;
+  box.innerHTML = '<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" width="210" height="190"></svg>';
+  const svg = box.querySelector('svg');
+  const t0 = performance.now();
+  function frame(ts) {
+    svg.innerHTML = renderFigure(getPose(type, (ts - t0) / 1000));
+    animRAF = requestAnimationFrame(frame);
+  }
+  animRAF = requestAnimationFrame(frame);
+}
+
+// ── Workout definitions ────────────────────────────────────────────────────
+
+const WORKOUTS = {
+  A: {
+    name: 'Workout A',
+    rounds: 3,
+    sets: [
+      { name: 'Squats',          reps: 12, kg: 16, duration: 60,  anim: 'squat', manualAdvance: true },
+      { name: 'Rest',                              duration: 60,  anim: 'rest'    },
+      { name: 'Clean & Press',   reps: 12, kg: 12, duration: 60,  anim: 'press', manualAdvance: true },
+      { name: 'Rest',                              duration: 60,  anim: 'rest'    },
+      { name: 'Kettlebell Rows', reps: 15, kg: 20, duration: 90,  anim: 'row',   manualAdvance: true },
+      { name: 'Rest',                              duration: 90,  anim: 'rest'    },
+    ]
+  },
+  B: {
+    name: 'Workout B  (EMOM)',
+    rounds: 6,
+    sets: [
+      { name: 'KB Swings',    reps: 20, kg: 12, emomNote: 'rest the minute', duration: 60, anim: 'swing'    },
+      { name: 'KB Thrusters', reps:  8, kg: 16, emomNote: 'rest the minute', duration: 60, anim: 'thruster' },
+    ]
+  }
+};
+
+// ── State ──────────────────────────────────────────────────────────────────
+
+let workout    = null;
+let flatSets   = [];   // [{...set, round}]
+let setIndex   = 0;
+let timeLeft   = 0;
+let timerID    = null;
+let running    = false;
+
+const CIRC = 2 * Math.PI * 84;   // circumference of timer ring (r=84)
+
+function selectWorkout(key) {
+  workout = WORKOUTS[key];
+  document.querySelectorAll('.wb-card').forEach(b => b.classList.remove('active'));
+  // mark active in both the main selector and the nav-menu
+  document.querySelectorAll('.wb-card').forEach(b => {
+    const label = b.querySelector('.wb-card-label');
+    if (label && label.textContent.trim() === `Workout ${key}`) b.classList.add('active');
+  });
+  buildFlatSets();
+  setIndex = 0;
+  running  = false;
+  stopAnim();
+  clearInterval(timerID);
+  const subtitles = { A: 'Strength', B: 'Conditioning' };
+  document.getElementById('main-title').textContent = `Workout ${key}`;
+  document.getElementById('logo-bar').textContent   = subtitles[key];
+  document.getElementById('selector').style.display    = 'none';
+  document.getElementById('hamburger').style.display   = 'flex';
+  document.getElementById('workout-ui').style.display  = 'flex';
+  document.getElementById('done-screen').style.display = 'none';
+  renderSet();
+}
+
+function toggleMenu() {
+  const ham  = document.getElementById('hamburger');
+  const menu = document.getElementById('nav-menu');
+  const back = document.getElementById('menu-backdrop');
+  const open = menu.classList.toggle('open');
+  ham.classList.toggle('open', open);
+  back.style.display = open ? 'block' : 'none';
+}
+
+function closeMenu() {
+  document.getElementById('nav-menu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('menu-backdrop').style.display = 'none';
+}
+
+function buildFlatSets() {
+  flatSets = [];
+  for (let r = 1; r <= workout.rounds; r++) {
+    workout.sets.forEach(s => flatSets.push({ ...s, round: r }));
+  }
+  // Remove trailing rest after last round
+  while (flatSets.length && flatSets[flatSets.length - 1].name === 'Rest') {
+    flatSets.pop();
+  }
+}
+
+// weight → accent colour
+function accentFor(kg) {
+  if (kg === 12) return { color: '#f5d800', glow: 'rgba(245,216,0,0.3)',  dim: 'rgba(245,216,0,0.12)' };
+  if (kg === 16) return { color: '#ff6a00', glow: 'rgba(255,106,0,0.35)', dim: 'rgba(255,106,0,0.15)' };
+  if (kg === 20) return { color: '#ef4444', glow: 'rgba(239,68,68,0.35)', dim: 'rgba(239,68,68,0.13)' };
+  return           { color: '#555555',      glow: 'rgba(100,100,100,0.2)', dim: 'rgba(100,100,100,0.08)' };
+}
+
+function applyAccent(kg) {
+  const a = accentFor(kg);
+  const r = document.documentElement;
+  r.style.setProperty('--accent',      a.color);
+  r.style.setProperty('--accent-glow', a.glow);
+  r.style.setProperty('--accent-dim',  a.dim);
+}
+
+function renderSet() {
+  const s = flatSets[setIndex];
+
+  // accent colour by weight (rest gets neutral grey)
+  applyAccent(s.kg || null);
+
+  // progress
+  document.getElementById('progress-bar').style.width =
+    (setIndex / flatSets.length * 100) + '%';
+
+  // round badge
+  document.getElementById('round-badge').textContent =
+    `Round ${s.round} of ${workout.rounds}`;
+
+  // name
+  document.getElementById('set-name').textContent = s.name;
+
+  // chips
+  const chipsEl = document.getElementById('chips');
+  chipsEl.innerHTML = '';
+  if (s.reps) chipsEl.innerHTML += `<span class="chip">${s.reps} reps</span>`;
+  if (s.kg)   chipsEl.innerHTML += `<span class="chip accent">${s.kg} kg</span>`;
+  if (s.emomNote) chipsEl.innerHTML += `<span class="chip">${s.emomNote}</span>`;
+
+  // animation — launch articulated figure loop
+  document.getElementById('anim-box').classList.toggle('lit', !!s.kg);
+  startAnim(s.anim);
+
+  // timer / done-button visibility
+  const isManual = !!s.manualAdvance;
+  document.getElementById('timer-wrap').style.display = isManual ? 'none'        : 'block';
+  document.getElementById('btn-done').style.display   = isManual ? 'inline-block' : 'none';
+  document.getElementById('btn-start').style.display  = isManual ? 'none'        : 'inline-block';
+  document.getElementById('btn-pause').style.display  = 'none';
+
+  // timer
+  timeLeft = s.duration;
+  if (!isManual) updateTimerDisplay();
+
+  // next-up
+  const next = flatSets[setIndex + 1];
+  let nextLabel = 'Workout complete!';
+  if (next) {
+    nextLabel = next.name;
+    if (next.kg)   nextLabel += ` · ${next.kg} kg`;
+    if (next.reps) nextLabel += ` · ${next.reps} reps`;
+  }
+  document.getElementById('next-name').textContent = nextLabel;
+}
+
+function updateTimerDisplay() {
+  const s      = flatSets[setIndex];
+  const pct    = timeLeft / s.duration;
+  const offset = CIRC * (1 - pct);
+
+  document.getElementById('timer-ring').style.strokeDasharray  = CIRC;
+  document.getElementById('timer-ring').style.strokeDashoffset = offset;
+  document.getElementById('timer-number').textContent = timeLeft;
+
+  // Last 10 s: override to warning red regardless of weight colour
+  if (timeLeft <= 10) {
+    document.getElementById('timer-ring').style.stroke   = 'var(--red-warn)';
+    document.getElementById('timer-number').style.color = 'var(--red-warn)';
+  } else {
+    document.getElementById('timer-ring').style.stroke   = 'var(--accent)';
+    document.getElementById('timer-number').style.color = 'var(--accent)';
+  }
+}
+
+function startTimer() {
+  if (running) return;
+  running = true;
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-pause').style.display = 'inline-block';
+
+  timerID = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      advance();
+    } else if (timeLeft % 10 === 0) {
+      speakSeconds(timeLeft);
+    } else {
+      playTick();
+    }
+  }, 1000);
+}
+
+function pauseTimer() {
+  running = false;
+  clearInterval(timerID);
+  document.getElementById('btn-start').style.display = 'inline-block';
+  document.getElementById('btn-pause').style.display = 'none';
+}
+
+function advance() {
+  clearInterval(timerID);
+  running = false;
+  setIndex++;
+  if (setIndex >= flatSets.length) {
+    finishWorkout();
+    return;
+  }
+  playBong();
+  renderSet();
+  // auto-start timer for timed sets (rest periods); manual sets wait for Done button
+  if (!flatSets[setIndex].manualAdvance) startTimer();
+}
+
+function skipSet() {
+  clearInterval(timerID);
+  running = false;
+  setIndex++;
+  if (setIndex >= flatSets.length) { finishWorkout(); return; }
+  playBong();
+  document.getElementById('btn-start').style.display = 'inline-block';
+  document.getElementById('btn-pause').style.display = 'none';
+  renderSet();
+}
+
+function resetWorkout() {
+  clearInterval(timerID);
+  running   = false;
+  stopAnim();
+  closeMenu();
+  setIndex  = 0;
+  document.getElementById('done-screen').style.display  = 'none';
+  document.getElementById('workout-ui').style.display   = 'flex';
+  document.getElementById('confetti-canvas').style.display = 'none';
+  if (workout) { buildFlatSets(); renderSet(); }
+}
+
+function finishWorkout() {
+  document.getElementById('workout-ui').style.display  = 'none';
+  document.getElementById('done-screen').style.display = 'flex';
+  document.getElementById('progress-bar').style.width  = '100%';
+  playTada();
+  launchConfetti();
+}
+
+// ── Tada sound ────────────────────────────────────────────────────────────
+function playTada() {
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+
+  // Fanfare: quick upward arpeggio then a held major chord
+  const notes = [
+    { freq: 261.6, t: 0.00, dur: 0.12 },   // C4
+    { freq: 329.6, t: 0.10, dur: 0.12 },   // E4
+    { freq: 392.0, t: 0.20, dur: 0.12 },   // G4
+    { freq: 523.3, t: 0.30, dur: 0.12 },   // C5
+    // held chord
+    { freq: 523.3, t: 0.44, dur: 0.9  },   // C5
+    { freq: 659.3, t: 0.44, dur: 0.9  },   // E5
+    { freq: 784.0, t: 0.44, dur: 0.9  },   // G5
+  ];
+
+  notes.forEach(({ freq, t, dur }) => {
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now + t);
+    gain.gain.setValueAtTime(0, now + t);
+    gain.gain.linearRampToValueAtTime(0.38, now + t + 0.02);
+    gain.gain.setValueAtTime(0.38, now + t + dur - 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + t + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + t);
+    osc.stop(now + t + dur + 0.05);
+  });
+}
+
+// ── Confetti ──────────────────────────────────────────────────────────────
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.style.display = 'block';
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+
+  const COLOURS = ['#f5a623','#27ae60','#e74c3c','#3498db','#9b59b6','#f1c40f','#1abc9c'];
+  const PIECE_COUNT = 160;
+  const pieces = Array.from({ length: PIECE_COUNT }, () => ({
+    x:    Math.random() * canvas.width,
+    y:    Math.random() * -canvas.height,          // start above viewport
+    w:    6 + Math.random() * 8,
+    h:    10 + Math.random() * 6,
+    r:    Math.random() * Math.PI * 2,
+    dr:   (Math.random() - 0.5) * 0.18,            // rotation speed
+    dx:   (Math.random() - 0.5) * 2.5,             // horizontal drift
+    dy:   2.5 + Math.random() * 3.5,               // fall speed
+    colour: COLOURS[Math.floor(Math.random() * COLOURS.length)],
+    alive: true,
+  }));
+
+  let rafID;
+  const startTime = performance.now();
+  const DURATION  = 5500;   // ms before fading out
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const elapsed = ts - startTime;
+    const alpha   = elapsed < DURATION - 1000
+      ? 1
+      : Math.max(0, 1 - (elapsed - (DURATION - 1000)) / 1000);
+
+    let anyAlive = false;
+    pieces.forEach(p => {
+      if (!p.alive) return;
+      p.x += p.dx;
+      p.y += p.dy;
+      p.r += p.dr;
+      if (p.y > canvas.height + 20) { p.alive = false; return; }
+      anyAlive = true;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.fillStyle = p.colour;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (anyAlive && elapsed < DURATION + 500) {
+      rafID = requestAnimationFrame(draw);
+    } else {
+      canvas.style.display = 'none';
+      cancelAnimationFrame(rafID);
+    }
+  }
+
+  rafID = requestAnimationFrame(draw);
+}
+
+// Spacebar → "Done — Start Rest" when on a manual-advance set
+document.addEventListener('keydown', e => {
+  if (e.code !== 'Space') return;
+  if (!flatSets.length) return;
+  const s = flatSets[setIndex];
+  if (s && s.manualAdvance && document.getElementById('btn-done').style.display !== 'none') {
+    e.preventDefault();   // stop page scroll
+    advance();
+  }
+});
+</script>
+</body>
+</html>
