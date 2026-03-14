@@ -891,34 +891,42 @@ function poseRow(t) {
 }
 
 // ── Kettlebell Swing ─────────────────────────────────────────────────────
+// Hip-hinge movement — posterior chain driven, NOT a squat.
+// Shins stay nearly vertical. Forearms connect with inner thighs at bottom.
+// Bell floats to chest height from hip power alone. Tall plank at top.
 function poseSwing(t) {
-  const period = 1.7;
+  const period = 1.8;
   const raw = (t % period) / period;
-  // Asymmetric: explosive hinge→float (35%), brief float (20%), smooth return (45%)
+  // Asymmetric rhythm: explosive drive up (30%), brief float at top (15%), controlled hinge back (55%)
   let p;
-  if      (raw < 0.35) p = eio(raw / 0.35);
-  else if (raw < 0.55) p = 1;
-  else                 p = 1 - eio((raw-0.55) / 0.45);
+  if      (raw < 0.30) p = eio(raw / 0.30);
+  else if (raw < 0.45) p = 1;
+  else                 p = 1 - eio((raw - 0.45) / 0.55);
 
-  const HINGE = {  // hip hinge, torso ~45°, bell on backswing
-    head: [102,60],  neck: [112,72],
-    lsho: [98,80],   rsho: [126,78],
-    lelb: [94,100],  relb: [122,98],
-    lhan: [94,116],  rhan: [122,114],
-    hip:  [132,88],
-    lkne: [118,128], rkne: [136,128],
-    lfoot:[106,184], rfoot:[134,184],
-    bell: [112,126], bellAngle: 28,
+  const HINGE = {
+    // Loaded hip-hinge: hips far back, torso nearly parallel to ground,
+    // shins nearly vertical (not squatting), forearms high on inner thighs.
+    head:  [94, 56],  neck:  [108, 70],   // head neutral, long flat spine
+    lsho:  [96, 78],  rsho:  [120, 76],
+    lelb:  [98,100],  relb:  [118, 98],   // elbows close to inner thighs
+    lhan:  [100,116], rhan:  [116,114],   // both hands together on handle
+    hip:   [140, 84],                     // hips driven far back — coiled spring
+    lkne:  [112,132], rkne:  [132,130],   // soft knee, shins nearly vertical
+    lfoot: [96, 184], rfoot: [130,184],   // wider than shoulders, toes out
+    bell:  [108,122], bellAngle: 24,      // bell between legs, tilted back
   };
-  const FLOAT = {  // full hip extension, arms float to shoulder height
-    head: [110,30],  neck: [110,44],
-    lsho: [93,54],   rsho: [127,54],
-    lelb: [88,68],   relb: [132,68],
-    lhan: [89,82],   rhan: [131,82],
-    hip:  [110,104],
-    lkne: [100,144], rkne: [120,144],
-    lfoot:[97,184],  rfoot:[123,184],
-    bell: [110,64],  bellAngle: -14,
+
+  const FLOAT = {
+    // Top: tall standing plank. Hips fully through, glutes locked.
+    // Arms float to chest height — no shoulder raise, no lean back.
+    head:  [110, 30], neck:  [110, 44],
+    lsho:  [93,  54], rsho:  [127, 54],   // shoulders packed down, lats engaged
+    lelb:  [87,  63], relb:  [133, 63],   // arms relatively straight
+    lhan:  [103, 74], rhan:  [117, 74],   // both hands at bell, chest height
+    hip:   [110,104],                     // hips driven fully forward
+    lkne:  [100,144], rkne:  [120,144],   // legs straight, quads engaged
+    lfoot: [96, 184], rfoot: [124,184],
+    bell:  [110, 78], bellAngle: -6,      // chest height, arms ~parallel to floor
   };
   return interp(HINGE, FLOAT, p);
 }
