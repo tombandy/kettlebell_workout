@@ -104,6 +104,32 @@
   }
   #nav-menu .wb-card-title { font-size: 1.4rem; }
   #nav-menu .wb-card-desc  { font-size: 0.75rem; }
+  #nav-menu hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2px 0;
+  }
+  #nav-menu .nav-home-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  #nav-menu .nav-home-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    background: var(--accent-dim);
+  }
 
   .logo-bar {
     font-family: 'Barlow Condensed', sans-serif;
@@ -133,6 +159,60 @@
     width: 100%;
     max-width: 680px;
     padding: 0 24px;
+  }
+
+  /* ── Single-KB toggle ── */
+  #kb-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0 0;
+    padding: 0 24px;
+    max-width: 680px;
+    width: 100%;
+  }
+  #kb-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 44px;
+    height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  #kb-toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text3);
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s, background 0.2s;
+  }
+  #kb-toggle:checked {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+  }
+  #kb-toggle:checked::after {
+    transform: translateX(20px);
+    background: var(--accent);
+  }
+  #kb-toggle-label {
+    font-size: 0.85rem;
+    color: var(--text2);
+    cursor: pointer;
+    user-select: none;
+    line-height: 1.4;
+  }
+  #kb-toggle-label strong {
+    color: var(--text);
+    font-weight: 600;
   }
 
   .wb-card {
@@ -595,6 +675,8 @@
       <div class="wb-card-desc">6 rounds · Swings + Thrusters</div>
       <span class="wb-card-tag">Timed</span>
     </div>
+    <hr>
+    <button class="nav-home-btn" onclick="goHome()">&#8592; Back to home screen</button>
   </div>
 </header>
 
@@ -613,6 +695,11 @@
     <div class="wb-card-desc">6 rounds · Swings + Thrusters<br>Every minute on the minute</div>
     <span class="wb-card-tag">Timed</span>
   </div>
+</div>
+
+<div id="kb-toggle-wrap">
+  <input type="checkbox" id="kb-toggle" onchange="singleKB = this.checked">
+  <label for="kb-toggle" id="kb-toggle-label"><strong>I only have one kettlebell</strong> — adapt exercises for single KB</label>
 </div>
 
 <!-- ── Workout UI ── -->
@@ -703,6 +790,20 @@ function speakSeconds(n) {
   window.speechSynthesis.speak(utt);
 }
 
+function speakSet(s) {
+  if (!window.speechSynthesis) return;
+  let text = s.name;
+  if (s.reps) text += `, ${s.reps} reps`;
+  if (s.duration && !s.manualAdvance) text += `. ${s.duration} seconds`;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate  = 1.0;
+  utt.pitch = 1.0;
+  utt.volume = 1;
+  // Slight delay so it doesn't overlap the bong sound
+  setTimeout(() => window.speechSynthesis.speak(utt), 600);
+}
+
 // Bright chime — two-tone ping (10-second warning)
 function playChime() {
   const ctx = getCtx();
@@ -763,8 +864,10 @@ function interp(A, B, t) {
     if (Array.isArray(A[k]))        R[k] = lp(A[k], B[k] ?? A[k], t);
     else if (typeof A[k]==='number') R[k] = lerp(A[k], B[k] ?? A[k], t);
   }
-  if (B.bell && !A.bell)  R.bell = lp(A.neck, B.bell, t);
-  if (!B.bell && A.bell)  R.bell = lp(A.bell, A.neck, t);
+  if (B.bell  && !A.bell)   R.bell  = lp(A.neck, B.bell,  t);
+  if (!B.bell  && A.bell)   R.bell  = lp(A.bell,  A.neck, t);
+  if (B.bell2 && !A.bell2)  R.bell2 = lp(A.neck, B.bell2, t);
+  if (!B.bell2 && A.bell2)  R.bell2 = lp(A.bell2, A.neck, t);
   return R;
 }
 
@@ -790,10 +893,18 @@ function renderFigure(j) {
   s += L(j.hip,   j.lkne,  2.5, DIM);
   s += L(j.lkne,  j.lfoot, 2.5, DIM);
 
-  // ── Bell (between back and front for depth) ──
+  // ── Bell(s) (between back and front for depth) ──
   if (j.bell) {
     const [bx,by] = j.bell;
     const ang = (j.bellAngle||0).toFixed(1);
+    s += `<g transform="translate(${f(bx)},${f(by)}) rotate(${ang})">
+      <ellipse cx="0" cy="5" rx="10" ry="9" fill="${su}" stroke="${ac}" stroke-width="2"/>
+      <path d="M-4.5,-4 Q-7,-15 -3,-18 L3,-18 Q7,-15 4.5,-4" fill="${su}" stroke="${ac}" stroke-width="2.2" stroke-linejoin="round"/>
+    </g>`;
+  }
+  if (j.bell2) {
+    const [bx,by] = j.bell2;
+    const ang = (j.bell2Angle||0).toFixed(1);
     s += `<g transform="translate(${f(bx)},${f(by)}) rotate(${ang})">
       <ellipse cx="0" cy="5" rx="10" ry="9" fill="${su}" stroke="${ac}" stroke-width="2"/>
       <path d="M-4.5,-4 Q-7,-15 -3,-18 L3,-18 Q7,-15 4.5,-4" fill="${su}" stroke="${ac}" stroke-width="2.2" stroke-linejoin="round"/>
@@ -818,14 +929,14 @@ function renderFigure(j) {
   return s;
 }
 
-// Pose dispatch
+// Pose dispatch — single vs double KB
 function getPose(type, t) {
   switch (type) {
-    case 'squat':    return poseSquat(t);
-    case 'press':    return posePress(t);
-    case 'row':      return poseRow(t);
-    case 'swing':    return poseSwing(t);
-    case 'thruster': return poseThruster(t);
+    case 'squat':    return singleKB ? poseSquat(t)     : poseSquatDouble(t);
+    case 'press':    return singleKB ? posePress(t)     : posePressDouble(t);
+    case 'row':      return singleKB ? poseRow(t)       : poseRowDouble(t);
+    case 'swing':    return poseSwing(t);   // always one KB regardless
+    case 'thruster': return singleKB ? poseThruster(t)  : poseThrusterDouble(t);
     default:         return poseRest(t);
   }
 }
@@ -997,6 +1108,136 @@ function poseThruster(t) {
   return interp(BOTTOM, TOP, p);
 }
 
+// ── Double Goblet → Front Squat (two KBs racked at shoulders) ────────────
+function poseSquatDouble(t) {
+  const p = eio(osc(t, 2.4));
+  const A = {  // standing — bells racked at both shoulders
+    head: [110,28],  neck: [110,44],
+    lsho: [93,54],   rsho: [127,54],
+    lelb: [88,68],   relb: [132,68],
+    lhan: [100,54],  rhan: [120,54],
+    hip:  [110,104],
+    lkne: [100,145], rkne: [120,145],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [90,46],   bellAngle: -15,
+    bell2:[130,46],  bell2Angle: 15,
+  };
+  const B = {  // bottom — hips below knees, bells still racked
+    head: [109,58],  neck: [109,73],
+    lsho: [92,83],   rsho: [126,83],
+    lelb: [88,98],   relb: [132,98],
+    lhan: [99,84],   rhan: [119,84],
+    hip:  [110,128],
+    lkne: [83,158],  rkne: [137,158],
+    lfoot:[93,184],  rfoot:[127,184],
+    bell: [84,76],   bellAngle: -15,
+    bell2:[134,76],  bell2Angle: 15,
+  };
+  return interp(A, B, p);
+}
+
+// ── Double Clean & Press (both arms) ──────────────────────────────────────
+function posePressDouble(t) {
+  const period = 3.4;
+  const p = (t % period) / period;
+  const HANG = {   // bells at hips, slight athletic hinge
+    head: [110,34],  neck: [110,48],
+    lsho: [93,58],   rsho: [127,58],
+    lelb: [87,78],   relb: [133,78],
+    lhan: [90,98],   rhan: [130,96],
+    hip:  [110,108],
+    lkne: [100,148], rkne: [120,148],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [86,102],  bellAngle: 8,
+    bell2:[134,100], bell2Angle: -8,
+  };
+  const RACK = {   // both bells at shoulders, elbows tucked forward
+    head: [110,30],  neck: [110,44],
+    lsho: [93,54],   rsho: [127,54],
+    lelb: [88,68],   relb: [132,68],
+    lhan: [100,54],  rhan: [120,54],
+    hip:  [110,104],
+    lkne: [100,145], rkne: [120,145],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [90,46],   bellAngle: -15,
+    bell2:[130,46],  bell2Angle: 15,
+  };
+  const OH = {     // both arms locked out overhead
+    head: [110,32],  neck: [110,46],
+    lsho: [93,56],   rsho: [127,56],
+    lelb: [86,30],   relb: [134,30],
+    lhan: [88,8],    rhan: [132,8],
+    hip:  [110,106],
+    lkne: [100,146], rkne: [120,146],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [84,2],    bellAngle: -4,
+    bell2:[136,2],   bell2Angle: 4,
+  };
+  if (p < 0.36) return interp(HANG, RACK, eio(p / 0.36));
+  if (p < 0.60) return interp(RACK, OH,   eio((p-0.36)/0.24));
+  return             interp(OH,   HANG,  eio((p-0.60)/0.40));
+}
+
+// ── Double Bent-over Row (both arms simultaneously) ───────────────────────
+function poseRowDouble(t) {
+  const p = eio(osc(t, 1.9));
+  const EXT = {  // torso hinged, both arms hanging with bells
+    head: [100,52],  neck: [110,64],
+    lsho: [97,72],   rsho: [123,72],
+    lelb: [90,94],   relb: [130,94],
+    lhan: [85,112],  rhan: [135,112],
+    hip:  [122,94],
+    lkne: [110,138], rkne: [134,138],
+    lfoot:[96,184],  rfoot:[136,184],
+    bell: [82,118],  bellAngle: 5,
+    bell2:[138,118], bell2Angle: -5,
+  };
+  const PULL = {  // both elbows drive back and up, bells to hips
+    head: [100,52],  neck: [110,64],
+    lsho: [97,72],   rsho: [123,72],
+    lelb: [86,72],   relb: [134,72],
+    lhan: [90,82],   rhan: [130,82],
+    hip:  [122,94],
+    lkne: [110,138], rkne: [134,138],
+    lfoot:[96,184],  rfoot:[136,184],
+    bell: [88,84],   bellAngle: -8,
+    bell2:[132,84],  bell2Angle: 8,
+  };
+  return interp(EXT, PULL, p);
+}
+
+// ── Double Thruster (front squat → double press) ──────────────────────────
+function poseThrusterDouble(t) {
+  const period = 2.4;
+  const raw = (t % period) / period;
+  const p = raw < 0.42
+    ? eio(raw / 0.42)
+    : 1 - eio((raw-0.42) / 0.58);
+  const BOTTOM = {  // deep squat, both bells at rack
+    head: [109,64],  neck: [109,78],
+    lsho: [92,88],   rsho: [126,88],
+    lelb: [88,102],  relb: [132,102],
+    lhan: [98,88],   rhan: [120,88],
+    hip:  [110,130],
+    lkne: [83,160],  rkne: [137,160],
+    lfoot:[93,184],  rfoot:[127,184],
+    bell: [84,80],   bellAngle: -15,
+    bell2:[134,80],  bell2Angle: 15,
+  };
+  const TOP = {     // standing, both bells locked out overhead
+    head: [110,36],  neck: [110,50],
+    lsho: [93,60],   rsho: [127,60],
+    lelb: [86,34],   relb: [134,34],
+    lhan: [88,12],   rhan: [132,12],
+    hip:  [110,110],
+    lkne: [100,151], rkne: [120,151],
+    lfoot:[97,184],  rfoot:[123,184],
+    bell: [84,6],    bellAngle: -4,
+    bell2:[136,6],   bell2Angle: 4,
+  };
+  return interp(BOTTOM, TOP, p);
+}
+
 // ── Standing Rest (breathing) ─────────────────────────────────────────────
 function poseRest(t) {
   const p = eio(osc(t, 3.0));
@@ -1049,6 +1290,12 @@ const WORKOUTS = {
           'Brace core and keep chest tall throughout',
           'Lower until thighs are parallel to the floor, knees tracking over toes',
           'Drive through heels to stand, squeeze glutes at the top',
+        ], instructions2kb: [
+          'Clean both KBs to rack position — one at each shoulder, elbows tucked forward',
+          'Stand feet shoulder-width apart, toes angled out 15–30°',
+          'Brace core and keep chest tall; bells stay locked at rack throughout',
+          'Lower until thighs are parallel to the floor, knees tracking over toes',
+          'Drive through heels to stand, squeezing glutes at the top',
         ]},
       { name: 'Rest',                              duration: 60,  anim: 'rest'    },
       { name: 'Clean & Press', reps: 12, kg: 12, duration: 60, anim: 'press', manualAdvance: true, instructions: [
@@ -1057,6 +1304,12 @@ const WORKOUTS = {
           'Pull elbow high and rotate wrist so the bell wraps to rack position (bell on forearm, elbow tucked)',
           'From rack, press the bell straight overhead to a fully locked-out arm',
           'Lower to rack under control, then hinge back down for the next rep',
+        ], instructions2kb: [
+          'Stand between both KBs, hinge at hips and grip both handles',
+          'Hike both bells back, then snap hips forward simultaneously',
+          'Pull both elbows high — rotate both wrists so bells wrap to rack at both shoulders',
+          'Press both bells straight overhead to locked-out arms',
+          'Lower both to rack under control, then hinge back down for the next rep',
         ]},
       { name: 'Rest',                              duration: 60,  anim: 'rest'    },
       { name: 'Kettlebell Rows', reps: 15, kg: 20, duration: 90, anim: 'row', manualAdvance: true, instructions: [
@@ -1065,6 +1318,12 @@ const WORKOUTS = {
           'Pull the bell up toward your hip, leading with your elbow',
           'Squeeze your shoulder blade at the top, then lower with control',
           'Keep back flat — avoid rotating your torso throughout',
+        ], instructions2kb: [
+          'Hinge forward from the hips until torso is roughly parallel to the floor',
+          'Hold a KB in each hand, both arms hanging straight down',
+          'Pull both bells up toward your hips simultaneously, elbows close to body',
+          'Squeeze both shoulder blades together at the top, then lower with control',
+          'Keep back flat and brace core throughout — no jerking or twisting',
         ]},
       { name: 'Rest',                              duration: 90,  anim: 'rest'    },
     ]
@@ -1086,6 +1345,12 @@ const WORKOUTS = {
           'Drive explosively out of the squat and use that momentum to press overhead',
           'Lock out your arm fully at the top — bicep by your ear, body tall',
           'Lower bell to rack as you descend straight into the next squat',
+        ], instructions2kb: [
+          'Clean both KBs to rack position — one at each shoulder, elbows tucked forward',
+          'Brace your core and squat until thighs are parallel to the floor',
+          'Drive explosively out of the squat, pressing both bells overhead simultaneously',
+          'Lock out both arms fully at the top, biceps by your ears',
+          'Lower both bells to rack as you descend into the next squat',
         ]},
     ]
   }
@@ -1099,6 +1364,7 @@ let setIndex   = 0;
 let timeLeft   = 0;
 let timerID    = null;
 let running    = false;
+let singleKB   = false;   // true = one KB, false = two KBs (default)
 
 const CIRC = 2 * Math.PI * 84;   // circumference of timer ring (r=84)
 
@@ -1119,6 +1385,7 @@ function selectWorkout(key) {
   document.getElementById('main-title').textContent = `Workout ${key}`;
   document.getElementById('logo-bar').textContent   = subtitles[key];
   document.getElementById('selector').style.display    = 'none';
+  document.getElementById('kb-toggle-wrap').style.display = 'none';
   document.getElementById('hamburger').style.display   = 'flex';
   document.getElementById('workout-ui').style.display  = 'flex';
   document.getElementById('done-screen').style.display = 'none';
@@ -1138,6 +1405,24 @@ function closeMenu() {
   document.getElementById('nav-menu').classList.remove('open');
   document.getElementById('hamburger').classList.remove('open');
   document.getElementById('menu-backdrop').style.display = 'none';
+}
+
+function goHome() {
+  closeMenu();
+  clearInterval(timerID);
+  running = false;
+  stopAnim();
+  workout  = null;
+  flatSets = [];
+  setIndex = 0;
+  document.getElementById('workout-ui').style.display   = 'none';
+  document.getElementById('done-screen').style.display  = 'none';
+  document.getElementById('selector').style.display     = 'flex';
+  document.getElementById('kb-toggle-wrap').style.display = 'flex';
+  document.getElementById('hamburger').style.display    = 'none';
+  document.getElementById('main-title').textContent     = 'Kettlebell';
+  document.getElementById('logo-bar').textContent       = 'Iron \u0026 Grit';
+  document.querySelectorAll('.wb-card').forEach(b => b.classList.remove('active'));
 }
 
 function buildFlatSets() {
@@ -1191,10 +1476,11 @@ function renderSet() {
   if (s.kg)   chipsEl.innerHTML += `<span class="chip accent">${s.kg} kg</span>`;
   if (s.emomNote) chipsEl.innerHTML += `<span class="chip">${s.emomNote}</span>`;
 
-  // instructions
+  // instructions — pick single or double KB variant
   const instrEl = document.getElementById('instructions');
-  if (s.instructions && s.instructions.length) {
-    instrEl.querySelector('ul').innerHTML = s.instructions.map(i => `<li>${i}</li>`).join('');
+  const instr = (!singleKB && s.instructions2kb) ? s.instructions2kb : s.instructions;
+  if (instr && instr.length) {
+    instrEl.querySelector('ul').innerHTML = instr.map(i => `<li>${i}</li>`).join('');
     instrEl.style.display = 'block';
   } else {
     instrEl.style.display = 'none';
@@ -1224,6 +1510,8 @@ function renderSet() {
     if (next.reps) nextLabel += ` · ${next.reps} reps`;
   }
   document.getElementById('next-name').textContent = nextLabel;
+
+  speakSet(s);
 }
 
 function updateTimerDisplay() {
