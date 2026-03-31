@@ -794,6 +794,7 @@ function speakSet(s) {
   if (!window.speechSynthesis) return;
   let text = s.name;
   if (s.reps) text += `, ${s.reps} reps`;
+  if (s.kg)   text += `, ${s.kg} kilograms`;
   if (s.duration && !s.manualAdvance) text += `. ${s.duration} seconds`;
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);

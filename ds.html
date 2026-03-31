@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iron &amp; Grit — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ── Tokens (identical to app) ───────────────────────────────────────────── */
+:root {
+  --accent:      #ff6a00;
+  --accent-dim:  rgba(255,106,0,0.15);
+  --accent-glow: rgba(255,106,0,0.35);
+  --bg:          #080808;
+  --surface:     #101010;
+  --surface2:    #181818;
+  --border:      #242424;
+  --text:        #ffffff;
+  --text2:       #777777;
+  --text3:       #333333;
+  --green:       #22c55e;
+  --red-warn:    #ef4444;
+
+  /* DS-only layout */
+  --ds-max:      900px;
+  --ds-gap:      48px;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  background-image: radial-gradient(ellipse 80% 40% at 50% -10%, rgba(255,106,0,0.07) 0%, transparent 70%);
+}
+
+/* ── Page layout ─────────────────────────────────────────────────────────── */
+.ds-page {
+  max-width: var(--ds-max);
+  margin: 0 auto;
+  padding: 64px 32px 120px;
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+.ds-section {
+  margin-bottom: var(--ds-gap);
+}
+
+.ds-section + .ds-section {
+  padding-top: var(--ds-gap);
+  border-top: 1px solid var(--border);
+}
+
+.ds-section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.ds-section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.ds-section-desc {
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 560px;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.ds-header {
+  margin-bottom: 64px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ds-header .eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.ds-header h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.ds-header p {
+  font-size: 0.95rem;
+  color: var(--text2);
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.ds-header-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.ds-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ds-meta-item span:first-child {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.ds-meta-item span:last-child {
+  font-size: 0.85rem;
+  color: var(--text2);
+}
+
+/* ── Token grid ──────────────────────────────────────────────────────────── */
+.token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.token-card {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.token-swatch {
+  height: 64px;
+  width: 100%;
+}
+
+.token-info {
+  background: var(--surface);
+  padding: 10px 12px;
+}
+
+.token-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 3px;
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+}
+
+.token-value {
+  font-size: 0.7rem;
+  color: var(--text2);
+  font-family: monospace;
+  letter-spacing: 0;
+}
+
+.token-var {
+  font-size: 0.65rem;
+  color: var(--text3);
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+/* Glow tokens need special background to show the glow */
+.token-swatch.glow-demo {
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.token-swatch.glow-demo::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* ── Typography specimens ────────────────────────────────────────────────── */
+.type-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.type-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  align-items: start;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.type-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.type-meta {
+  padding-top: 4px;
+}
+
+.type-role {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.type-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.type-detail dt {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: 6px;
+}
+
+.type-detail dd {
+  font-size: 0.78rem;
+  color: var(--text2);
+  font-family: monospace;
+}
+
+/* ── Spacing scale ───────────────────────────────────────────────────────── */
+.spacing-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spacing-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px;
+  gap: 16px;
+  align-items: center;
+}
+
+.spacing-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text2);
+  font-family: monospace;
+  text-align: right;
+}
+
+.spacing-bar-wrap {
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.spacing-bar {
+  height: 8px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.spacing-usage {
+  font-size: 0.7rem;
+  color: var(--text3);
+  line-height: 1.4;
+}
+
+/* ── Radius scale ────────────────────────────────────────────────────────── */
+.radius-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.radius-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.radius-swatch {
+  width: 64px;
+  height: 64px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+
+.radius-label {
+  font-size: 0.7rem;
+  color: var(--text2);
+  font-family: monospace;
+  text-align: center;
+}
+
+/* ── Component: Cards ────────────────────────────────────────────────────── */
+.component-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.wb-card {
+  flex: 1;
+  min-width: 200px;
+  max-width: 280px;
+  padding: 24px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.wb-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.wb-card:hover::before,
+.wb-card.active::before  { opacity: 1; }
+.wb-card:hover,
+.wb-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+.wb-card-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.wb-card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--text);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.wb-card-desc {
+  font-size: 0.8rem;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.wb-card-tag {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+/* ── Component: Chips ────────────────────────────────────────────────────── */
+.chip {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+}
+.chip.accent {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* ── Component: Buttons ──────────────────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ctrl-btn {
+  padding: 13px 26px;
+  border-radius: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.ctrl-btn:hover  { opacity: 0.88; }
+.ctrl-btn:active { transform: scale(0.97); }
+
+.btn-start  { background: var(--green);    color: #fff; box-shadow: 0 0 16px rgba(34,197,94,0.35); }
+.btn-done   { background: var(--green);    color: #fff; box-shadow: 0 0 18px rgba(34,197,94,0.4); font-size: 1.05rem; padding: 16px 36px; letter-spacing: 2px; }
+.btn-pause  { background: #d97706;         color: #fff; }
+.btn-ghost  { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+.done-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 16px 44px;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.done-btn:hover {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+
+/* ── Component: Badge ────────────────────────────────────────────────────── */
+.badge-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.round-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+
+/* ── Component: Progress bar ─────────────────────────────────────────────── */
+.progress-demo {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progress-wrap {
+  width: 100%;
+  background: var(--surface2);
+  border-radius: 99px;
+  height: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: width 0.5s ease;
+}
+
+/* ── Component: Toggle ───────────────────────────────────────────────────── */
+.toggle-demo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kb-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 44px;
+  height: 24px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+}
+.kb-toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--text3);
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s, background 0.2s;
+}
+.kb-toggle:checked {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+.kb-toggle:checked::after {
+  transform: translateX(20px);
+  background: var(--accent);
+}
+
+/* ── Component: Instructions panel ──────────────────────────────────────── */
+.instructions-demo {
+  max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.instructions-demo ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.instructions-demo li {
+  display: flex;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.45;
+}
+
+.instructions-demo li::before {
+  content: '·';
+  color: var(--accent);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+/* ── Motion tokens ───────────────────────────────────────────────────────── */
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.motion-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.motion-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+
+.motion-value {
+  font-size: 0.82rem;
+  color: var(--text);
+  font-family: monospace;
+  margin-bottom: 8px;
+}
+
+.motion-desc {
+  font-size: 0.75rem;
+  color: var(--text3);
+  line-height: 1.5;
+}
+
+/* ── Nav back link ───────────────────────────────────────────────────────── */
+.ds-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text2);
+  text-decoration: none;
+  margin-bottom: 40px;
+  transition: color 0.2s;
+}
+.ds-back:hover { color: var(--accent); }
+
+/* ── TOC ─────────────────────────────────────────────────────────────────── */
+.ds-toc {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.ds-toc a {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ds-toc a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Weight colour variants ──────────────────────────────────────────────── */
+.weight-tokens {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.weight-card {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  min-width: 140px;
+}
+
+.weight-swatch {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.weight-info {
+  background: var(--surface);
+  padding: 10px 12px;
+}
+
+.weight-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 3px;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.weight-hex {
+  font-size: 0.7rem;
+  color: var(--text2);
+  font-family: monospace;
+}
+
+</style>
+</head>
+<body>
+<div class="ds-page">
+
+  <!-- ── Back link ── -->
+  <a href="index.html" class="ds-back">&#8592; Back to app</a>
+
+  <!-- ── Page header ── -->
+  <header class="ds-header">
+    <div class="eyebrow">Design System · v1.0</div>
+    <h1>Iron &amp; Grit</h1>
+    <p>Visual language for the kettlebell workout timer. A dark, high-contrast aesthetic built on two typefaces, a single brand accent, and deliberate use of glow and shadow to convey intensity.</p>
+    <div class="ds-header-meta">
+      <div class="ds-meta-item">
+        <span>Mode</span>
+        <span>Dark only</span>
+      </div>
+      <div class="ds-meta-item">
+        <span>Primary font</span>
+        <span>Barlow</span>
+      </div>
+      <div class="ds-meta-item">
+        <span>Display font</span>
+        <span>Barlow Condensed</span>
+      </div>
+      <div class="ds-meta-item">
+        <span>Base unit</span>
+        <span>4px</span>
+      </div>
+    </div>
+    <nav class="ds-toc" aria-label="Jump to section">
+      <a href="#colour">Colour</a>
+      <a href="#typography">Typography</a>
+      <a href="#spacing">Spacing</a>
+      <a href="#radius">Radius</a>
+      <a href="#motion">Motion</a>
+      <a href="#components">Components</a>
+    </nav>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       COLOUR
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="colour">
+    <div class="ds-section-label">01</div>
+    <h2 class="ds-section-title">Colour</h2>
+    <p class="ds-section-desc">
+      All colours are exposed as CSS custom properties on <code style="color:var(--text2);font-size:0.85em">:root</code>.
+      The palette is intentionally minimal — near-black backgrounds with a single vibrant orange accent driven by weight intensity.
+    </p>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Brand &amp; State</h3>
+    <div class="token-grid" style="margin-bottom:32px;">
+      <div class="token-card">
+        <div class="token-swatch" style="background:#ff6a00;box-shadow:0 0 20px rgba(255,106,0,0.5)"></div>
+        <div class="token-info">
+          <div class="token-name">Accent</div>
+          <div class="token-value">#ff6a00</div>
+          <div class="token-var">--accent</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:rgba(255,106,0,0.15);border-bottom:1px solid var(--border)"></div>
+        <div class="token-info">
+          <div class="token-name">Accent Dim</div>
+          <div class="token-value">rgba(255,106,0,0.15)</div>
+          <div class="token-var">--accent-dim</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch glow-demo" style="background:var(--surface2)">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--accent);box-shadow:0 0 24px rgba(255,106,0,0.7)"></div>
+        </div>
+        <div class="token-info">
+          <div class="token-name">Accent Glow</div>
+          <div class="token-value">rgba(255,106,0,0.35)</div>
+          <div class="token-var">--accent-glow</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#22c55e;box-shadow:0 0 16px rgba(34,197,94,0.4)"></div>
+        <div class="token-info">
+          <div class="token-name">Green</div>
+          <div class="token-value">#22c55e</div>
+          <div class="token-var">--green</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#ef4444;box-shadow:0 0 16px rgba(239,68,68,0.4)"></div>
+        <div class="token-info">
+          <div class="token-name">Red Warn</div>
+          <div class="token-value">#ef4444</div>
+          <div class="token-var">--red-warn</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#d97706"></div>
+        <div class="token-info">
+          <div class="token-name">Amber</div>
+          <div class="token-value">#d97706</div>
+          <div class="token-var">hardcoded</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Backgrounds &amp; Surfaces</h3>
+    <div class="token-grid" style="margin-bottom:32px;">
+      <div class="token-card">
+        <div class="token-swatch" style="background:#080808;border-bottom:1px solid var(--border)"></div>
+        <div class="token-info">
+          <div class="token-name">Background</div>
+          <div class="token-value">#080808</div>
+          <div class="token-var">--bg</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#101010;border-bottom:1px solid var(--border)"></div>
+        <div class="token-info">
+          <div class="token-name">Surface</div>
+          <div class="token-value">#101010</div>
+          <div class="token-var">--surface</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#181818;border-bottom:1px solid var(--border)"></div>
+        <div class="token-info">
+          <div class="token-name">Surface 2</div>
+          <div class="token-value">#181818</div>
+          <div class="token-var">--surface2</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#242424;border-bottom:1px solid var(--border)"></div>
+        <div class="token-info">
+          <div class="token-name">Border</div>
+          <div class="token-value">#242424</div>
+          <div class="token-var">--border</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Text</h3>
+    <div class="token-grid" style="margin-bottom:40px;">
+      <div class="token-card">
+        <div class="token-swatch" style="background:#ffffff"></div>
+        <div class="token-info">
+          <div class="token-name">Text</div>
+          <div class="token-value">#ffffff</div>
+          <div class="token-var">--text</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#777777"></div>
+        <div class="token-info">
+          <div class="token-name">Text 2</div>
+          <div class="token-value">#777777</div>
+          <div class="token-var">--text2</div>
+        </div>
+      </div>
+      <div class="token-card">
+        <div class="token-swatch" style="background:#333333;border-bottom:1px solid var(--border)"></div>
+        <div class="token-info">
+          <div class="token-name">Text 3</div>
+          <div class="token-value">#333333</div>
+          <div class="token-var">--text3</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Weight-driven accent colours</h3>
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:20px;line-height:1.6;">
+      The accent token is overridden at runtime based on the active kettlebell weight, giving the UI a dynamic temperature shift that signals intensity.
+    </p>
+    <div class="weight-tokens">
+      <div class="weight-card">
+        <div class="weight-swatch" style="background:rgba(245,216,0,0.12);border-bottom:1px solid #f5d800;color:#f5d800;box-shadow:0 0 16px rgba(245,216,0,0.3)">12 KG</div>
+        <div class="weight-info">
+          <div class="weight-name">12 kg — Yellow</div>
+          <div class="weight-hex">#f5d800</div>
+        </div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-swatch" style="background:rgba(255,106,0,0.15);border-bottom:1px solid #ff6a00;color:#ff6a00;box-shadow:0 0 16px rgba(255,106,0,0.35)">16 KG</div>
+        <div class="weight-info">
+          <div class="weight-name">16 kg — Orange</div>
+          <div class="weight-hex">#ff6a00</div>
+        </div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-swatch" style="background:rgba(239,68,68,0.13);border-bottom:1px solid #ef4444;color:#ef4444;box-shadow:0 0 16px rgba(239,68,68,0.35)">20 KG</div>
+        <div class="weight-info">
+          <div class="weight-name">20 kg — Red</div>
+          <div class="weight-hex">#ef4444</div>
+        </div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-swatch" style="background:rgba(100,100,100,0.08);border-bottom:1px solid #555;color:#555">REST</div>
+        <div class="weight-info">
+          <div class="weight-name">Rest — Neutral</div>
+          <div class="weight-hex">#555555</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       TYPOGRAPHY
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="typography">
+    <div class="ds-section-label">02</div>
+    <h2 class="ds-section-title">Typography</h2>
+    <p class="ds-section-desc">
+      Two weights of the Barlow family. <strong style="color:var(--text)">Barlow Condensed</strong> for all display, UI labels, and numbers — always uppercase with generous letter-spacing.
+      <strong style="color:var(--text)">Barlow</strong> for body copy, instructions, and descriptive text.
+    </p>
+
+    <div class="type-stack">
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Display / Hero</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow Condensed</dd>
+            <dt>Weight</dt><dd>900 (Black)</dd>
+            <dt>Size</dt><dd>3.4rem (54px)</dd>
+            <dt>Tracking</dt><dd>4px</dd>
+            <dt>Case</dt><dd>uppercase</dd>
+            <dt>Usage</dt><dd>h1, page title</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:3.4rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:var(--text);line-height:1;">Kettlebell</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Set Name</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow Condensed</dd>
+            <dt>Weight</dt><dd>900 (Black)</dd>
+            <dt>Size</dt><dd>3rem (48px)</dd>
+            <dt>Tracking</dt><dd>2px</dd>
+            <dt>Case</dt><dd>uppercase</dd>
+            <dt>Usage</dt><dd>#set-name, active exercise</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:3rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--text);line-height:1;">KB Swings</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Timer Number</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow Condensed</dd>
+            <dt>Weight</dt><dd>900 (Black)</dd>
+            <dt>Size</dt><dd>3.8rem (61px)</dd>
+            <dt>Tracking</dt><dd>-1px</dd>
+            <dt>Usage</dt><dd>#timer-number</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:3.8rem;font-weight:900;letter-spacing:-1px;color:var(--accent);line-height:1;">60</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Card Title</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow Condensed</dd>
+            <dt>Weight</dt><dd>900 (Black)</dd>
+            <dt>Size</dt><dd>1.9rem (30px)</dd>
+            <dt>Tracking</dt><dd>1px</dd>
+            <dt>Case</dt><dd>uppercase</dd>
+            <dt>Usage</dt><dd>.wb-card-title</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.9rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--text);line-height:1.2;">Strength</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Control Button</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow Condensed</dd>
+            <dt>Weight</dt><dd>700 (Bold)</dd>
+            <dt>Size</dt><dd>1rem (16px)</dd>
+            <dt>Tracking</dt><dd>1.5px</dd>
+            <dt>Case</dt><dd>uppercase</dd>
+            <dt>Usage</dt><dd>.ctrl-btn</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text);">Done — Start Rest</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Label / Eyebrow</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow Condensed</dd>
+            <dt>Weight</dt><dd>700 (Bold)</dd>
+            <dt>Size</dt><dd>0.7rem (11px)</dd>
+            <dt>Tracking</dt><dd>4–6px</dd>
+            <dt>Case</dt><dd>uppercase</dd>
+            <dt>Usage</dt><dd>.wb-card-label, .logo-bar</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">Workout A</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;color:var(--text2);text-transform:uppercase;">Round 2 of 3</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Body / Descriptions</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow</dd>
+            <dt>Weight</dt><dd>400 (Regular)</dd>
+            <dt>Size</dt><dd>0.8–0.9rem</dd>
+            <dt>Line height</dt><dd>1.5–1.6</dd>
+            <dt>Usage</dt><dd>.wb-card-desc, body copy</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-size:0.8rem;color:var(--text2);line-height:1.5;">3 rounds · Squats, Clean &amp; Press, Rows<br>Rest between sets</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-role">Instructions</div>
+          <dl class="type-detail">
+            <dt>Font</dt><dd>Barlow</dd>
+            <dt>Weight</dt><dd>400 (Regular)</dd>
+            <dt>Size</dt><dd>0.88rem</dd>
+            <dt>Line height</dt><dd>1.45</dd>
+            <dt>Usage</dt><dd>#instructions li</dd>
+          </dl>
+        </div>
+        <div>
+          <div style="font-size:0.88rem;color:var(--text2);line-height:1.45;">Stand feet shoulder-width apart, toes angled out 15–30°</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SPACING
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="spacing">
+    <div class="ds-section-label">03</div>
+    <h2 class="ds-section-title">Spacing</h2>
+    <p class="ds-section-desc">
+      Built on a 4px base unit. Values are applied directly in the CSS rather than through named tokens — the scale below documents actual values in use.
+    </p>
+
+    <div class="spacing-stack">
+      <div class="spacing-row">
+        <div class="spacing-label">2px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:2px"></div></div>
+        <div class="spacing-usage">Toggle thumb inset</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">4px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:4px"></div></div>
+        <div class="spacing-usage">Progress bar height</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">6px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:6px"></div></div>
+        <div class="spacing-usage">Label margin-bottom</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">8px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:8px"></div></div>
+        <div class="spacing-usage">Timer ring stroke-width; instruction row gap</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">10px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:10px"></div></div>
+        <div class="spacing-usage">Chip gap, control gap</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">12px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:12px"></div></div>
+        <div class="spacing-usage">Toggle label gap</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">14px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:14px"></div></div>
+        <div class="spacing-usage">Set name margin-bottom</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">16px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:16px"></div></div>
+        <div class="spacing-usage">Card gap; selector padding (mobile)</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">20px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:20px"></div></div>
+        <div class="spacing-usage">Instructions panel padding inline</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">24px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:24px"></div></div>
+        <div class="spacing-usage">Horizontal page padding; controls gap; instruction panel margin-bottom</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">28px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:28px"></div></div>
+        <div class="spacing-usage">Chips margin-bottom; progress bar margin-top</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">32px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:32px"></div></div>
+        <div class="spacing-usage">Anim box margin-bottom; timer margin-bottom</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">36px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:36px"></div></div>
+        <div class="spacing-usage">Header padding-top (desktop)</div>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-label">60px</div>
+        <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:60px"></div></div>
+        <div class="spacing-usage">Workout UI padding-bottom; done screen padding</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       RADIUS
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="radius">
+    <div class="ds-section-label">04</div>
+    <h2 class="ds-section-title">Border Radius</h2>
+    <p class="ds-section-desc">Corners follow a clear hierarchy — tighter on small interactive elements, softer on containers.</p>
+
+    <div class="radius-row">
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:4px"></div>
+        <div class="radius-label">4px<br><span style="color:var(--text3)">Tag</span></div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:6px"></div>
+        <div class="radius-label">6px<br><span style="color:var(--text3)">Chip</span></div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:8px"></div>
+        <div class="radius-label">8px<br><span style="color:var(--text3)">Hamburger</span></div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:10px"></div>
+        <div class="radius-label">10px<br><span style="color:var(--text3)">Button</span></div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:12px"></div>
+        <div class="radius-label">12px<br><span style="color:var(--text3)">Toggle pill</span></div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:14px"></div>
+        <div class="radius-label">14px<br><span style="color:var(--text3)">Card, panel</span></div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:20px"></div>
+        <div class="radius-label">20px<br><span style="color:var(--text3)">Anim box</span></div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-swatch" style="border-radius:99px;height:20px;width:64px;"></div>
+        <div class="radius-label">99px<br><span style="color:var(--text3)">Progress bar</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       MOTION
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="motion">
+    <div class="ds-section-label">05</div>
+    <h2 class="ds-section-title">Motion</h2>
+    <p class="ds-section-desc">Transitions are short and purposeful. Heavier UI elements (timer ring, colour transitions) use slightly longer durations to feel deliberate. The stick-figure animation runs on <code style="color:var(--text2);font-size:0.85em">requestAnimationFrame</code> with ease-in-out easing for organic movement.</p>
+
+    <div class="motion-grid">
+      <div class="motion-card">
+        <div class="motion-name">Micro</div>
+        <div class="motion-value">0.1s</div>
+        <div class="motion-desc">Button press scale transform</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Fast</div>
+        <div class="motion-value">0.15s</div>
+        <div class="motion-desc">Button hover opacity</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Default</div>
+        <div class="motion-value">0.2s</div>
+        <div class="motion-desc">Card hover, border, toggle, nav menu item</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Colour shift</div>
+        <div class="motion-value">0.4s</div>
+        <div class="motion-desc">Accent colour transitions (chip, anim box glow, timer ring)</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Progress</div>
+        <div class="motion-value">0.5s ease</div>
+        <div class="motion-desc">Progress bar width advance</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Timer ring</div>
+        <div class="motion-value">1s linear</div>
+        <div class="motion-desc">strokeDashoffset tick — matches the 1 s countdown interval</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Figure — squat</div>
+        <div class="motion-value">2.4 s period</div>
+        <div class="motion-desc">ease-in-out oscillation via rAF</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Figure — swing</div>
+        <div class="motion-value">1.8 s period</div>
+        <div class="motion-desc">Asymmetric: 30% drive up, 15% float, 55% hinge back</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Figure — press / thruster</div>
+        <div class="motion-value">3.4 s / 2.4 s</div>
+        <div class="motion-desc">3-phase keyframe interpolation: hang → rack → overhead</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">Voice delay</div>
+        <div class="motion-value">600 ms</div>
+        <div class="motion-desc">Speech synthesis offset to clear bong transition sound</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       COMPONENTS
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="components">
+    <div class="ds-section-label">06</div>
+    <h2 class="ds-section-title">Components</h2>
+    <p class="ds-section-desc">Live component specimens rendered in the app's own CSS.</p>
+
+    <!-- Workout cards -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Workout Cards</h3>
+    <div class="component-row" style="margin-bottom:40px;">
+      <div class="wb-card">
+        <div class="wb-card-label">Workout A</div>
+        <div class="wb-card-title">Strength</div>
+        <div class="wb-card-desc">3 rounds · Squats, Clean &amp; Press, Rows<br>Rest between sets</div>
+        <span class="wb-card-tag">Manual Advance</span>
+      </div>
+      <div class="wb-card active">
+        <div class="wb-card-label">Workout B</div>
+        <div class="wb-card-title">Conditioning</div>
+        <div class="wb-card-desc">6 rounds · Swings + Thrusters<br>Every minute on the minute</div>
+        <span class="wb-card-tag">Timed</span>
+      </div>
+    </div>
+
+    <!-- Chips -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Chips</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;">
+      <span class="chip">12 reps</span>
+      <span class="chip accent">16 kg</span>
+      <span class="chip">rest the minute</span>
+    </div>
+
+    <!-- Buttons -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Buttons</h3>
+    <div class="btn-row" style="margin-bottom:16px;">
+      <button class="ctrl-btn btn-start">Start</button>
+      <button class="ctrl-btn btn-pause">Pause</button>
+      <button class="ctrl-btn btn-ghost">Skip</button>
+      <button class="ctrl-btn btn-ghost">Reset</button>
+    </div>
+    <div style="margin-bottom:16px;">
+      <button class="ctrl-btn btn-done">Done — Start Rest</button>
+    </div>
+    <div style="margin-bottom:40px;">
+      <button class="done-btn">Go Again</button>
+    </div>
+
+    <!-- Toggle -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Toggle</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:40px;">
+      <div class="toggle-demo">
+        <input type="checkbox" class="kb-toggle" id="demo-toggle-off">
+        <label for="demo-toggle-off" style="font-size:0.85rem;color:var(--text2);cursor:pointer;"><strong style="color:var(--text);">I only have one kettlebell</strong> — off state</label>
+      </div>
+      <div class="toggle-demo">
+        <input type="checkbox" class="kb-toggle" id="demo-toggle-on" checked>
+        <label for="demo-toggle-on" style="font-size:0.85rem;color:var(--text2);cursor:pointer;"><strong style="color:var(--text);">I only have one kettlebell</strong> — on state</label>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Progress Bar</h3>
+    <div class="progress-demo" style="margin-bottom:40px;">
+      <div class="progress-wrap"><div class="progress-bar" style="width:0%"></div></div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:33%"></div></div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:66%"></div></div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:100%"></div></div>
+    </div>
+
+    <!-- Instructions panel -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Instructions Panel</h3>
+    <div class="instructions-demo" style="margin-bottom:40px;">
+      <ul>
+        <li>Hinge at hips, grip the handle, hike the bell back between your legs</li>
+        <li>Snap hips forward explosively — let the bell float to chest height</li>
+        <li>At the top: glutes contracted, core braced, body in a tall straight line</li>
+        <li>Let gravity bring the bell back; re-hinge as forearms reconnect with thighs</li>
+        <li>Drive into the next rep — it's hip power, not your arms, that moves the bell</li>
+      </ul>
+    </div>
+
+    <!-- Round badge -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Round Badge</h3>
+    <div class="badge-row" style="margin-bottom:40px;">
+      <span class="round-badge">Round 1 of 3</span>
+      <span class="round-badge">Round 3 of 6</span>
+    </div>
+
+    <!-- Next-up -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">Next Up</h3>
+    <div style="font-size:0.8rem;font-weight:500;color:var(--text3);letter-spacing:0.5px;">
+      Up next &nbsp;·&nbsp; <span style="color:var(--text2);">Rest · 60 seconds</span>
+    </div>
+
+  </section>
+
+</div>
+</body>
+</html>
