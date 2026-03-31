@@ -1,6 +1,6 @@
 # Workouts
 
-## Workout A 
+## Workout A
 
 This is a strength focussed workout.
 
@@ -26,26 +26,42 @@ Repeat the following 6 times in total using the EMOM (Every Minute On the Minute
 
 # Excercises
 
+## Squats (Goblet)
+
+- Stand with feet shoulder-width apart, toes angled out 15–30°
+- Hold the kettlebell by the horns at chest height, elbows pointing down
+- Brace your core and keep your chest tall throughout
+- Lower until thighs are parallel to the floor, knees tracking over toes
+- Drive through your heels to stand, squeezing glutes at the top
+
+## Clean & Press
+
+- Stand over the KB, feet hip-width apart; hinge at hips and grip the handle
+- Hike the bell back between your legs, then snap hips forward
+- As the bell rises, pull your elbow high and rotate your wrist so the bell wraps to rack position (bell resting on forearm, elbow tucked in front)
+- From rack, brace your core and press the bell straight overhead to a fully locked-out arm
+- Lower back to rack under control, then hinge back down to the floor for the next rep
+
+## Kettlebell Rows
+
+- Hinge forward from the hips until your torso is roughly parallel to the floor; brace a hand on your knee or a surface for support
+- Hold the KB in the working hand, arm hanging straight down, palm facing inward
+- Pull the bell up toward your hip, leading with your elbow — keep it close to your body
+- Squeeze your shoulder blade at the top, then lower with control
+- Keep your back flat and avoid rotating your torso throughout
+
 ## Kettlebell Swing
 
-The kettlebell swing is a hip-hinge movement — it's powered by your posterior chain (glutes and hamstrings), not your arms or lower back. Here's how to perform one clean rep:
+- Stand with feet slightly wider than shoulder-width, toes out 15–30°; place the KB on the floor about a foot ahead
+- Hinge at the hips (push hips back, not knees down), grip the handle, and hike the bell back between your legs like a football snap — forearms high on the inner thighs
+- Snap your hips forward explosively — think "standing plank delivered with force" — letting the bell float to chest height
+- At the top: glutes fully contracted, core braced, shoulders packed down, body in a tall straight line
+- Let gravity bring the bell back down; re-hinge as your forearms reconnect with your thighs, then drive into the next rep
 
-**Setup**
+## Kettlebell Thrusters
 
-Stand with your feet slightly wider than shoulder-width apart, toes pointed out about 15–30 degrees. Place the kettlebell on the floor roughly a foot in front of you. Bend at the hips — pushing your backside rearward as if closing a car door with your hips — and grip the handle with both hands, palms facing you. Your arms should be long and relaxed; don't shrug your shoulders up toward your ears. At this point your shins should be nearly vertical, your knees soft (slightly bent but not deeply squatting), your back flat, and your chest proud — think "long spine."
-
-**The hike**
-
-Tilt the kettlebell handle toward you so the bell sits slightly behind your wrists. Hike the kettlebell back between your legs like a football snap. Let your forearms travel high into the inner thighs, close to the groin. Your torso will tip forward, but your back must stay flat — no rounding. Your weight should shift into your heels and midfoot. This loaded position should feel like a coiled spring: hamstrings stretched, glutes loaded, core braced.
-
-**The drive**
-
-From that bottom position, snap your hips forward explosively. Think of it as a standing plank delivered with force — you're thrusting your pelvis forward, squeezing your glutes hard at the top, and bracing your abs as if someone were about to punch you in the stomach. Your knees straighten (but don't hyperextend), and your body forms a straight vertical line from head to heel: ankles, knees, hips, shoulders, and ears all stacked. At the top of the swing, your arms are roughly parallel with the floor (chest height). The bell floated up there because of your hip power, not because you lifted it with your shoulders.
-
-A few critical details at the top: your glutes should be fully contracted, your quads engaged (kneecaps pulled up), your core locked tight, and your lats engaged to keep the shoulders packed down and away from your ears. Don't lean back — the top position is a tall, tight standing plank, not a backbend.
-
-**The descent**
-
-Let gravity bring the bell back down. As the bell drops and your forearms approach your torso, hinge at the hips again — wait for the bell to come to you rather than folding early. Your forearms should reconnect snugly with the inner thighs as the bell passes between your legs. You're right back in that loaded, coiled position, ready for the next rep.
-
-**Common mistakes to watch for:** squatting instead of hinging (the movement is hip-dominant, not knee-dominant), rounding the lower back at any point, using the arms to lift the bell rather than letting it float from hip drive, and hyperextending the lower back at the top rather than standing in a neutral spine.
+- Clean the KB to rack position at one shoulder (or both if using two bells): bell resting on forearm, elbow in front of body
+- Brace your core and squat down until thighs are parallel to the floor, keeping your chest tall
+- Drive explosively out of the squat and use that momentum to press the bell overhead
+- Lock out your arm fully at the top — bicep by your ear, body tall
+- As you lower the bell back to rack, simultaneously descend into the next squat

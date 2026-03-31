@@ -279,6 +279,38 @@
     transition: background 0.4s, border-color 0.4s, color 0.4s, box-shadow 0.4s;
   }
 
+  /* Instructions list */
+  #instructions {
+    width: 100%;
+    max-width: 480px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: none;
+  }
+  #instructions ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #instructions li {
+    display: flex;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--text2);
+    line-height: 1.45;
+  }
+  #instructions li::before {
+    content: '·';
+    color: var(--accent);
+    font-size: 1.2rem;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+
   /* Animation box */
   #anim-box {
     width: min(260px, 80vw);
@@ -590,6 +622,8 @@
   <div id="round-badge"></div>
   <div id="set-name"></div>
   <div id="chips"></div>
+
+  <div id="instructions"><ul></ul></div>
 
   <div id="anim-box"></div>
 
@@ -1009,11 +1043,29 @@ const WORKOUTS = {
     name: 'Workout A',
     rounds: 3,
     sets: [
-      { name: 'Squats',          reps: 12, kg: 16, duration: 60,  anim: 'squat', manualAdvance: true },
+      { name: 'Squats', reps: 12, kg: 16, duration: 60, anim: 'squat', manualAdvance: true, instructions: [
+          'Stand feet shoulder-width apart, toes angled out 15–30°',
+          'Hold the KB by the horns at chest height, elbows pointing down',
+          'Brace core and keep chest tall throughout',
+          'Lower until thighs are parallel to the floor, knees tracking over toes',
+          'Drive through heels to stand, squeeze glutes at the top',
+        ]},
       { name: 'Rest',                              duration: 60,  anim: 'rest'    },
-      { name: 'Clean & Press',   reps: 12, kg: 12, duration: 60,  anim: 'press', manualAdvance: true },
+      { name: 'Clean & Press', reps: 12, kg: 12, duration: 60, anim: 'press', manualAdvance: true, instructions: [
+          'Stand over the KB; hinge at hips and grip the handle',
+          'Hike the bell back between your legs, then snap hips forward',
+          'Pull elbow high and rotate wrist so the bell wraps to rack position (bell on forearm, elbow tucked)',
+          'From rack, press the bell straight overhead to a fully locked-out arm',
+          'Lower to rack under control, then hinge back down for the next rep',
+        ]},
       { name: 'Rest',                              duration: 60,  anim: 'rest'    },
-      { name: 'Kettlebell Rows', reps: 15, kg: 20, duration: 90,  anim: 'row',   manualAdvance: true },
+      { name: 'Kettlebell Rows', reps: 15, kg: 20, duration: 90, anim: 'row', manualAdvance: true, instructions: [
+          'Hinge forward from the hips, torso roughly parallel to the floor',
+          'Hold the KB in the working hand, arm hanging straight down',
+          'Pull the bell up toward your hip, leading with your elbow',
+          'Squeeze your shoulder blade at the top, then lower with control',
+          'Keep back flat — avoid rotating your torso throughout',
+        ]},
       { name: 'Rest',                              duration: 90,  anim: 'rest'    },
     ]
   },
@@ -1021,8 +1073,20 @@ const WORKOUTS = {
     name: 'Workout B  (EMOM)',
     rounds: 6,
     sets: [
-      { name: 'KB Swings',    reps: 20, kg: 12, emomNote: 'rest the minute', duration: 60, anim: 'swing'    },
-      { name: 'KB Thrusters', reps:  8, kg: 16, emomNote: 'rest the minute', duration: 60, anim: 'thruster' },
+      { name: 'KB Swings', reps: 20, kg: 12, emomNote: 'rest the minute', duration: 60, anim: 'swing', instructions: [
+          'Hinge at hips, grip the handle, hike the bell back between your legs',
+          'Snap hips forward explosively — let the bell float to chest height',
+          'At the top: glutes contracted, core braced, body in a tall straight line',
+          'Let gravity bring the bell back; re-hinge as forearms reconnect with thighs',
+          'Drive into the next rep — it\'s hip power, not your arms, that moves the bell',
+        ]},
+      { name: 'KB Thrusters', reps: 8, kg: 16, emomNote: 'rest the minute', duration: 60, anim: 'thruster', instructions: [
+          'Clean the KB to rack position: bell resting on forearm, elbow tucked in front',
+          'Brace your core and squat down until thighs are parallel to the floor',
+          'Drive explosively out of the squat and use that momentum to press overhead',
+          'Lock out your arm fully at the top — bicep by your ear, body tall',
+          'Lower bell to rack as you descend straight into the next squat',
+        ]},
     ]
   }
 };
@@ -1126,6 +1190,15 @@ function renderSet() {
   if (s.reps) chipsEl.innerHTML += `<span class="chip">${s.reps} reps</span>`;
   if (s.kg)   chipsEl.innerHTML += `<span class="chip accent">${s.kg} kg</span>`;
   if (s.emomNote) chipsEl.innerHTML += `<span class="chip">${s.emomNote}</span>`;
+
+  // instructions
+  const instrEl = document.getElementById('instructions');
+  if (s.instructions && s.instructions.length) {
+    instrEl.querySelector('ul').innerHTML = s.instructions.map(i => `<li>${i}</li>`).join('');
+    instrEl.style.display = 'block';
+  } else {
+    instrEl.style.display = 'none';
+  }
 
   // animation — launch articulated figure loop
   document.getElementById('anim-box').classList.toggle('lit', !!s.kg);
